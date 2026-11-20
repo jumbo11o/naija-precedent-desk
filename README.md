@@ -76,5 +76,5 @@ Unlike standard chatbots that trust LLM output blindly, this system enforces a *
 ---
 
 ## Team
-* **[Your Name]** — `[Role, e.g., Full-Stack & AI Engineering]`
-* **[Teammate Name, if applicable]** — `[Role]`
+* **MOHAMMED UMAR — `FRONTEND DEVELOPER`
+* ** — `[Role]`
