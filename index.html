@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#183c36">
+  <title>Briefcase | Nigerian Legal Research</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #182b29;
+      --muted: #64716e;
+      --line: #dce3df;
+      --paper: #f7f8f5;
+      --white: #fff;
+      --forest: #183c36;
+      --forest-2: #24574e;
+      --mint: #e7f0eb;
+      --lime: #d2e87a;
+      --gold: #c5883d;
+      --red: #a63e35;
+      --shadow: 0 16px 50px #19332c14;
+      font-family: "Segoe UI", Candara, sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); min-height: 100vh; }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); }
+    .rail { background: var(--forest); color: #eaf0e9; padding: 27px 18px 22px; display: flex; flex-direction: column; }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 31px; }
+    .brand-mark { width: 35px; height: 35px; border: 1px solid #87a79a; border-radius: 9px; display: grid; place-items: center; color: var(--lime); font-family: Georgia, serif; font-size: 21px; }
+    .brand-name { font: 600 18px Georgia, serif; letter-spacing: .2px; }
+    .brand-sub { color: #a8bdb4; font-size: 10px; letter-spacing: 1.15px; text-transform: uppercase; margin-top: 3px; }
+    .rail-label { color: #91aaa0; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; padding: 0 11px; margin: 3px 0 10px; }
+    .nav-item { width: 100%; display: flex; align-items: center; gap: 11px; padding: 11px 12px; border: 0; color: #d3e1da; background: transparent; border-radius: 6px; text-align: left; font-size: 13px; }
+    .nav-item.active { background: #ffffff17; color: white; }
+    .nav-item svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+    .nav-count { margin-left: auto; color: #a5bdb3; font-size: 11px; }
+    .rail-bottom { margin-top: auto; }
+    .privacy-note { margin: 15px 3px 0; padding: 14px 12px; border-top: 1px solid #ffffff24; color: #b7c8c0; font-size: 11px; line-height: 1.55; }
+    .privacy-note strong { display: block; color: white; font-weight: 600; margin-bottom: 4px; }
+    .main { min-width: 0; }
+    .topbar { height: 66px; padding: 0 42px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: #fbfcfa; }
+    .crumb { color: var(--muted); font-size: 12px; }
+    .crumb strong { color: var(--ink); font-weight: 600; }
+    .top-actions { display: flex; align-items: center; gap: 17px; }
+    .status { display: flex; gap: 7px; align-items: center; font-size: 11px; color: var(--muted); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #8d9995; }
+    .icon-button { border: 1px solid var(--line); background: white; color: var(--ink); width: 34px; height: 34px; display: grid; place-items: center; border-radius: 5px; }
+    .icon-button svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+    .content { max-width: 1190px; margin: 0 auto; padding: 36px 42px 60px; }
+    .eyebrow { font-size: 10px; letter-spacing: 1.6px; color: var(--forest-2); text-transform: uppercase; font-weight: 700; }
+    h1 { font: 400 34px/1.15 Georgia, serif; margin: 10px 0 9px; letter-spacing: 0; }
+    .intro { font-size: 13px; color: var(--muted); max-width: 600px; margin: 0; line-height: 1.6; }
+    .query-box { margin-top: 27px; background: var(--white); border: 1px solid #cbd6d0; border-radius: 7px; box-shadow: var(--shadow); overflow: hidden; }
+    .query-box:focus-within { border-color: var(--forest-2); box-shadow: 0 0 0 3px #24574e12, var(--shadow); }
+    .query-label { display: block; padding: 16px 18px 0; font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.1px; }
+    #question { border: 0; outline: 0; resize: vertical; min-height: 78px; width: 100%; padding: 8px 18px 10px; color: var(--ink); font-size: 15px; line-height: 1.5; background: transparent; }
+    #question::placeholder { color: #9aa5a0; }
+    .query-footer { padding: 10px 13px; border-top: 1px solid #edf0ed; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .mode { display: inline-flex; background: #eef2ef; border-radius: 5px; padding: 3px; }
+    .mode button { border: 0; background: transparent; padding: 7px 10px; font-size: 11px; color: var(--muted); border-radius: 3px; }
+    .mode button[aria-pressed="true"] { background: white; color: var(--forest); box-shadow: 0 1px 3px #183c3618; font-weight: 600; }
+    .submit { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 4px; padding: 10px 15px; background: var(--forest); color: white; font-size: 12px; font-weight: 600; }
+    .submit:hover { background: var(--forest-2); }
+    .submit svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .guardrail { display: flex; gap: 9px; align-items: flex-start; margin: 13px 2px 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .guardrail svg { width: 14px; height: 14px; flex: 0 0 auto; color: var(--forest-2); stroke: currentColor; fill: none; stroke-width: 1.8; margin-top: 1px; }
+    .workspace-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(260px, .75fr); gap: 20px; margin-top: 34px; align-items: start; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .section-heading h2 { font: 400 19px Georgia, serif; margin: 0; }
+    .count { color: var(--muted); font-size: 11px; }
+    .outline-button { display: inline-flex; align-items: center; gap: 7px; background: white; border: 1px solid #cbd6d0; border-radius: 4px; padding: 8px 10px; color: var(--forest); font-size: 11px; font-weight: 600; }
+    .outline-button:hover { background: var(--mint); }
+    .outline-button svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .source-list { display: grid; gap: 8px; }
+    .empty-state { min-height: 190px; background: #fff; border: 1px dashed #cbd6d0; border-radius: 6px; display: grid; place-items: center; text-align: center; padding: 25px; }
+    .empty-inner { max-width: 350px; }
+    .empty-icon { width: 36px; height: 36px; display: grid; place-items: center; margin: 0 auto 12px; border-radius: 50%; background: var(--mint); color: var(--forest); }
+    .empty-icon svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+    .empty-state h3 { font: 400 17px Georgia, serif; margin: 0 0 7px; }
+    .empty-state p { font-size: 11px; line-height: 1.55; color: var(--muted); margin: 0 0 14px; }
+    .source-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 5px; background: white; }
+    .source-type { flex: 0 0 31px; height: 36px; display: grid; place-items: center; background: var(--mint); border-radius: 3px; color: var(--forest); font: 11px Georgia, serif; }
+    .source-info { min-width: 0; flex: 1; }
+    .source-title { font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
+    .source-cite { color: var(--muted); font-size: 10px; margin-top: 4px; overflow-wrap: anywhere; }
+    .source-meta { color: #798681; font-size: 10px; margin-top: 6px; }
+    .library-tools { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 12px; }
+    .library-tools .outline-button { font-size: 10px; }
+    .source-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .source-tags select { max-width: 145px; border: 1px solid var(--line); background: #f9fbf9; color: var(--muted); font-size: 9px; padding: 5px 6px; border-radius: 3px; }
+    .authority-badge { display: inline-flex; align-items: center; border: 1px solid #d5dfd9; background: #f1f5f2; color: #435b51; border-radius: 3px; padding: 3px 6px; font-size: 9px; font-weight: 600; }
+    .authority-badge.status-good { border-color: #b7d0ac; background: #edf5e9; color: #3c6733; }
+    .authority-badge.status-warning { border-color: #e6c590; background: #fff6e8; color: #80551c; }
+    .authority-badge.status-bad { border-color: #e1b5b1; background: #fff0ef; color: #8d3932; }
+    .remove-source { border: 0; background: transparent; color: #899590; padding: 3px; }
+    .remove-source:hover { color: var(--red); }
+    .remove-source svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+    .side-panel { border-top: 2px solid var(--forest); background: #edf2ee; padding: 18px 17px; }
+    .side-panel h3 { font: 400 16px Georgia, serif; margin: 0 0 13px; }
+    .check-row { display: grid; grid-template-columns: 20px 1fr; gap: 9px; margin: 13px 0; align-items: start; }
+    .check { width: 17px; height: 17px; display: grid; place-items: center; border-radius: 50%; background: #d8e8d8; color: var(--forest); font-size: 10px; font-weight: 700; }
+    .check-row strong { display: block; font-size: 11px; font-weight: 600; }
+    .check-row span { display: block; font-size: 10px; line-height: 1.45; color: var(--muted); margin-top: 3px; }
+    .side-rule { height: 1px; background: #d5dfd9; margin: 16px 0 12px; }
+    .side-foot { color: var(--muted); font-size: 10px; line-height: 1.55; }
+    .answer-area { margin-top: 25px; }
+    .answer-card { border: 1px solid var(--line); background: white; border-radius: 5px; overflow: hidden; }
+    .answer-top { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #edf0ed; }
+    .answer-top strong { font-size: 11px; }
+    .verified-label { color: var(--forest-2); font-size: 10px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    .verified-label svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .answer-body { padding: 16px; font-size: 12px; line-height: 1.7; }
+    .evidence-item { border-left: 2px solid var(--gold); padding: 2px 0 2px 13px; margin: 13px 0; color: #35433e; }
+    .evidence-cite { font-size: 10px; color: var(--muted); margin-top: 6px; }
+    .citation-link { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px; border: 0; background: transparent; padding: 0; color: var(--forest-2); text-align: left; text-decoration: underline; text-decoration-color: #a7bbb0; text-underline-offset: 2px; font-size: 10px; }
+    .citation-link:hover { color: var(--forest); }
+    .query-highlight { background: #eaf3b7; color: inherit; padding: 0 1px; border-radius: 2px; }
+    .source-viewer { max-height: 65vh; overflow: auto; }
+    .viewer-meta { color: var(--muted); font-size: 10px; margin-bottom: 12px; }
+    .source-paragraph { padding: 11px 12px; border-bottom: 1px solid #edf0ed; scroll-margin: 15px; font-size: 11px; line-height: 1.65; white-space: pre-wrap; }
+    .source-paragraph.highlighted { background: #f4f7dc; outline: 2px solid #c8d874; }
+    .paragraph-number { color: var(--forest-2); font-weight: 700; font-size: 10px; margin-right: 7px; }
+    .audit-log { margin-top: 11px; border-top: 1px solid var(--line); padding-top: 9px; }
+    .audit-log summary { cursor: pointer; color: #556660; font-size: 10px; font-weight: 600; }
+    .audit-entry { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 12px; margin-top: 8px; border-left: 2px solid var(--red); padding: 9px; background: #fff7f5; font-size: 10px; line-height: 1.5; }
+    .audit-entry.verified { border-color: #5b8850; background: #f2f7ef; }
+    .audit-entry strong { display: block; margin-bottom: 3px; }
+    .audit-evidence { border-left: 1px solid #dce3df; padding-left: 10px; }
+    .source-link { color: var(--forest-2); font-size: 10px; }
+    .answer-caveat { background: #f6f7f4; color: var(--muted); padding: 10px 12px; font-size: 10px; line-height: 1.5; }
+    .alert { padding: 11px 13px; border: 1px solid #e4c1bd; background: #fff7f5; color: #73342e; border-radius: 4px; font-size: 11px; line-height: 1.5; }
+    .modal-backdrop { position: fixed; inset: 0; z-index: 4; display: grid; place-items: center; padding: 20px; background: #13231f88; }
+    .modal { width: min(590px, 100%); max-height: min(90vh, 780px); overflow: auto; background: white; border-radius: 7px; box-shadow: 0 20px 70px #0003; }
+    .viewer-modal { width: min(900px, 100%); }
+    .modal-head { padding: 20px 22px 15px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: start; }
+    .modal-head h2 { font: 400 21px Georgia, serif; margin: 0; }
+    .modal-head p { color: var(--muted); font-size: 11px; margin: 6px 0 0; line-height: 1.5; }
+    .modal-body { padding: 18px 22px 22px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .field { display: grid; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: #46534f; font-size: 10px; font-weight: 600; }
+    .field input, .field textarea, .field select { width: 100%; border: 1px solid #cbd6d0; border-radius: 4px; padding: 9px 10px; font-size: 12px; color: var(--ink); background: white; outline: none; }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--forest-2); box-shadow: 0 0 0 2px #24574e14; }
+    .field textarea { min-height: 155px; resize: vertical; line-height: 1.5; }
+    .field-hint { color: #75817c; font-size: 10px; line-height: 1.45; }
+    .dropzone { width: 100%; min-height: 98px; display: grid; place-items: center; gap: 4px; padding: 14px; border: 1px dashed #9aada3; border-radius: 4px; background: #f8faf8; color: var(--forest); text-align: center; }
+    .dropzone:hover, .dropzone.drag-over { border-color: var(--forest-2); background: var(--mint); }
+    .dropzone strong { font-size: 11px; font-weight: 600; }
+    .dropzone span { color: var(--muted); font-size: 10px; }
+    .dropzone svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+    .tag-summary { color: var(--forest-2); font-size: 10px; line-height: 1.45; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 17px; }
+    .text-button { border: 0; background: transparent; padding: 9px 12px; color: var(--muted); font-size: 11px; }
+    .danger-button { color: var(--red); border: 1px solid #e5c4c0; background: #fff8f6; border-radius: 4px; padding: 8px 11px; font-size: 11px; }
+    .toast { position: fixed; z-index: 6; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 11px 15px; background: #213d36; color: white; border-radius: 4px; font-size: 11px; box-shadow: var(--shadow); }
+    .hidden { display: none !important; }
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 210px minmax(0, 1fr); }
+      .topbar { padding: 0 25px; }
+      .content { padding: 30px 25px 48px; }
+      .workspace-grid { grid-template-columns: minmax(0, 1.3fr) minmax(220px, .8fr); gap: 14px; }
+    }
+    @media (max-width: 680px) {
+      .shell { display: block; }
+      .rail { min-height: 0; padding: 12px 15px; flex-direction: row; align-items: center; justify-content: space-between; }
+      .brand { padding: 0; }
+      .brand-mark { width: 31px; height: 31px; }
+      .brand-name { font-size: 16px; }
+      .brand-sub, .rail-label, .rail-bottom, .nav-item:not(.active) { display: none; }
+      .rail nav { display: flex; }
+      .nav-item.active { width: auto; padding: 8px 10px; font-size: 11px; }
+      .nav-item.active svg { width: 15px; }
+      .topbar { height: 48px; padding: 0 16px; }
+      .status { font-size: 10px; }
+      .content { padding: 27px 16px 40px; }
+      h1 { font-size: 29px; }
+      .workspace-grid { grid-template-columns: 1fr; margin-top: 29px; }
+      .side-panel { order: 2; }
+      .query-footer { align-items: flex-end; }
+      .mode button { padding: 7px 8px; font-size: 10px; }
+      .submit { padding: 9px 11px; font-size: 11px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .library-tools > button { flex: 1 1 135px; justify-content: center; }
+      .source-tags select { max-width: 125px; }
+      .audit-entry { grid-template-columns: 1fr; }
+      .audit-evidence { border-left: 0; border-top: 1px solid #dce3df; padding: 7px 0 0; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .content { animation: enter .28s ease-out both; }
+      @keyframes enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Primary navigation">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">B</div>
+        <div><div class="brand-name">Briefcase</div><div class="brand-sub">Nigerian law research</div></div>
+      </div>
+      <nav>
+        <div class="rail-label">Research</div>
+        <button class="nav-item active" type="button" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5M8 10.8h5.5M10.8 8v5.5"/></svg>
+          Research desk
+        </button>
+        <button class="nav-item" id="sourcesNav" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h11.5A2.5 2.5 0 0 1 19 7v13H7a2 2 0 0 1-2-2z"/><path d="M5 17.5A2.5 2.5 0 0 1 7.5 15H19M9 8h6M9 11h6"/></svg>
+          Source library <span id="navCount" class="nav-count">0</span>
+        </button>
+      </nav>
+      <div class="rail-bottom">
+        <div class="rail-label">Workspace</div>
+        <button class="nav-item" id="settingsNav" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a1.8 1.8 0 1 1-2.5 2.5l-.1-.1a1.8 1.8 0 0 0-3 .9v.2a1.8 1.8 0 1 1-3.6 0v-.2a1.8 1.8 0 0 0-3-.9l-.1.1a1.8 1.8 0 1 1-2.5-2.5l.1-.1a1.8 1.8 0 0 0-.9-3H3.7a1.8 1.8 0 1 1 0-3.6h.2a1.8 1.8 0 0 0 .9-3l-.1-.1a1.8 1.8 0 1 1 2.5-2.5l.1.1a1.8 1.8 0 0 0 3-.9v-.2a1.8 1.8 0 1 1 3.6 0v.2a1.8 1.8 0 0 0 3 .9l.1-.1a1.8 1.8 0 1 1 2.5 2.5l-.1.1a1.8 1.8 0 0 0 .9 3h.2a1.8 1.8 0 1 1 0 3.6h-.2a1.8 1.8 0 0 0-.9 3Z"/></svg>
+          LLM connection
+        </button>
+        <div class="privacy-note"><strong>Private by default</strong>Sources stay in this browser. Text is sent only to an endpoint you configure.</div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="crumb">Workspace <span aria-hidden="true">/</span> <strong>Research desk</strong></div>
+        <div class="top-actions"><div class="status"><span class="status-dot" id="statusDot"></span><span id="statusText">Local evidence mode</span></div><button class="icon-button" id="settingsButton" type="button" aria-label="LLM connection settings" title="LLM connection settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.8 1.8 0 0 0 .3 2l.1.1-1.8 1.8-.1-.1a1.8 1.8 0 0 0-2-.3 1.8 1.8 0 0 0-1.1 1.7v.2h-2.6v-.2a1.8 1.8 0 0 0-1.1-1.7 1.8 1.8 0 0 0-2 .3l-.1.1-1.8-1.8.1-.1a1.8 1.8 0 0 0 .3-2A1.8 1.8 0 0 0 6 13.9h-.2v-2.6H6a1.8 1.8 0 0 0 1.7-1.1 1.8 1.8 0 0 0-.3-2l-.1-.1 1.8-1.8.1.1a1.8 1.8 0 0 0 2 .3A1.8 1.8 0 0 0 12.3 5v-.2h2.6V5A1.8 1.8 0 0 0 16 6.7a1.8 1.8 0 0 0 2-.3l.1-.1 1.8 1.8-.1.1a1.8 1.8 0 0 0-.3 2 1.8 1.8 0 0 0 1.7 1.1h.2v2.6h-.2a1.8 1.8 0 0 0-1.8 1.1Z"/></svg></button></div>
+      </header>
+      <div class="content">
+        <div class="eyebrow">Nigerian judicial precedents &amp; law reports</div>
+        <h1>Research, with the record in view.</h1>
+        <p class="intro">Search source documents you add. Every answer is tied to text you can inspect; anything the available record cannot support is left unanswered.</p>
+
+        <form class="query-box" id="queryForm">
+          <label class="query-label" for="question">Research question</label>
+          <textarea id="question" placeholder="Ask a question about the authorities in your library..." required></textarea>
+          <div class="query-footer">
+            <div class="mode" role="group" aria-label="Answer mode"><button type="button" id="localMode" aria-pressed="true">Evidence only</button><button type="button" id="llmMode" aria-pressed="false">LLM synthesis</button></div>
+            <button class="submit" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>Search authorities</button>
+          </div>
+        </form>
+        <div class="guardrail"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.4 8.3-8 10-4.6-1.7-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/></svg><span><strong>Source-first answers.</strong> No authority is invented. LLM output is withheld unless every claim has an exact, source-matched quotation.</span></div>
+        <div class="field-hint" id="searchEngineStatus" role="status">Local extractive search is available; ranked search loads when online.</div>
+
+        <section class="answer-area hidden" id="answerArea" aria-live="polite"></section>
+        <div id="searchNotice" class="answer-area hidden" aria-live="polite"></div>
+
+        <div class="workspace-grid" id="librarySection">
+          <section>
+            <div class="section-heading"><h2>Source library</h2><span class="count" id="sourceCount">0 sources</span></div>
+            <div class="library-tools">
+              <button class="submit" id="loadDemoButton" type="button">Load 3 Real Nigerian Landmark Judgments (Demo Pack)</button>
+              <button class="outline-button" id="exportLibraryButton" type="button">Export Library (.json)</button>
+              <button class="outline-button" id="importLibraryButton" type="button">Import Library (.json)</button>
+              <input id="importLibraryFile" type="file" accept=".json,application/json" hidden>
+            </div>
+            <div class="field-hint">Demo pack contains linked judgment excerpts, not complete judgments. Source authenticity and current status are not certified.</div>
+            <div class="source-list" id="sourceList"></div>
+          </section>
+          <aside class="side-panel">
+            <h3>Citation safeguards</h3>
+            <div class="check-row"><div class="check">1</div><div><strong>Search your library</strong><span>Answers only draw from source records you add.</span></div></div>
+            <div class="check-row"><div class="check">2</div><div><strong>Verify every quotation</strong><span>Cited text must exactly match the stored authority.</span></div></div>
+            <div class="check-row"><div class="check">3</div><div><strong>Abstain on gaps</strong><span>No relevant source or failed citation means no answer.</span></div></div>
+            <div class="side-rule"></div>
+            <div class="side-foot">This tool supports legal research; it does not verify whether an uploaded source is authentic, current, or good law. Confirm each authority against an official report before relying on it.</div>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = 'briefcase.ng.sources.v1';
+      const SETTINGS_KEY = 'briefcase.ng.settings.v1';
+      const $ = (selector) => document.querySelector(selector);
+      const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+      function safeExternalUrl(value) {
+        try { const url = new URL(String(value || '')); return ['http:', 'https:'].includes(url.protocol) ? url.href : ''; }
+        catch { return ''; }
+      }
+      const normalize = (value) => value.toLocaleLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
+      let sources = loadSources();
+      let settings = loadSettings();
+      let answerMode = 'local';
+      let toastTimer;
+      const DEMO_PACK = [
+        {
+          id: 'demo-ngsc-1987-7', title: 'Prince Yahaya Adigun & Ors v Attorney-General of Oyo State & Ors',
+          citation: '[1987] NGSC 7 · SC.98/1986', jurisdiction: 'Supreme Court of Nigeria', hierarchy: 'Supreme Court', status: 'Not checked', year: '1987', kind: 'Judgment excerpt',
+          sourceUrl: 'https://lawcarenigeria.com/prince-yahaya-adigun-ors-v-attorney-general-of-oyo-state-ors1987/',
+          officialUrl: 'https://nigerialii.org/akn/ng/judgment/ngsc/1987/7/eng@1987-03-20',
+          text: 'Where one party is denied an opportunity of fully presenting his case and that same opportunity was allowed the opposite party then there is a denial of the first party’s right of presenting his case in detail: Stafford v. Minister of Health (1946) K.B.D. 621.'
+        },
+        {
+          id: 'demo-ngsc-1990-40', title: 'Joshua Ogunleye v Babatayo Oni',
+          citation: '[1990] NGSC 40 · (1990) LCN/2433(SC)', jurisdiction: 'Supreme Court of Nigeria', hierarchy: 'Supreme Court', status: 'Not checked', year: '1990', kind: 'Judgment excerpt',
+          sourceUrl: 'https://lawcarenigeria.com/joshua-ogunleye-vs-babatayo-oni/',
+          officialUrl: 'https://nigerialii.org/akn/ng/judgment/ngsc/1990/40/eng@1990-04-26',
+          text: 'The learned counsel for the appellant cannot therefore be right when he submitted that the certificate of occupancy, exh.B, reinforces the appellant’s title.'
+        },
+        {
+          id: 'demo-ngsc-2008-12', title: 'Nika Fishing Co. Ltd. v Lavina Corporation',
+          citation: '[2008] NGSC 12 · (2008) LCN/3464(SC)', jurisdiction: 'Supreme Court of Nigeria', hierarchy: 'Supreme Court', status: 'Not checked', year: '2008', kind: 'Judgment excerpt',
+          sourceUrl: 'https://lawcarenigeria.com/nika-fishing-co-ltd-vs-lavina-corporation/',
+          officialUrl: 'https://nigerialii.org/akn/ng/judgment/ngsc/2008/12/eng@2008-07-11',
+          text: 'The bill of lading contains the contractual terms between the parties and is therefore binding on the parties. Parties are bound by the conditions and terms in a contract they freely enter into.'
+        }
+      ];
+
+      function loadSources() {
+        try { const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); return Array.isArray(parsed) ? parsed.filter((item) => item && item.id && item.text && item.title).map((item) => ({ ...item, sourceUrl: safeExternalUrl(item.sourceUrl), officialUrl: safeExternalUrl(item.officialUrl) })) : []; }
+        catch { return []; }
+      }
+      function loadSettings() {
+        try { return JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{"provider":"custom","endpoint":"","model":""}'); }
+        catch { return { provider: 'custom', endpoint: '', model: '' }; }
+      }
+      function persistSources() {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(sources)); renderSources(); return true; }
+        catch { showToast('Could not save: browser storage is full. Export a backup or remove large documents.'); return false; }
+      }
+      function statusClass(status) {
+        if (status === 'Good Law') return 'status-good';
+        if (status === 'Distinguished') return 'status-warning';
+        if (status === 'Overruled — Verify') return 'status-bad';
+        return '';
+      }
+      function loadDemoPack() {
+        const existingIds = new Set(sources.map((source) => source.id));
+        const additions = DEMO_PACK.filter((source) => !existingIds.has(source.id)).map((source) => ({ ...source, addedAt: new Date().toISOString(), paragraphs: buildParagraphs(source.text) }));
+        if (!additions.length) { showToast('Demo excerpts are already in this library.'); return; }
+        const previous = sources;
+        sources = [...additions, ...sources];
+        if (persistSources()) showToast('Three linked judgment excerpts added. Authority status remains unchecked.');
+        else sources = previous;
+      }
+      function exportLibrary() {
+        const bundle = { format: 'briefcase-nigerian-law-library', version: 1, exportedAt: new Date().toISOString(), sources };
+        const url = URL.createObjectURL(new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' }));
+        const link = document.createElement('a'); link.href = url; link.download = 'briefcase-nigerian-law-library.json'; link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000); showToast(`${sources.length} source${sources.length === 1 ? '' : 's'} exported. API keys are not included.`);
+      }
+      async function importLibrary(file) {
+        if (!file) return;
+        if (file.size > 50 * 1024 * 1024) { showToast('JSON libraries must be 50 MB or smaller.'); return; }
+        try {
+          const bundle = JSON.parse(await file.text());
+          const incoming = Array.isArray(bundle) ? bundle : bundle.sources;
+          if (!Array.isArray(incoming) || !incoming.length || incoming.some((source) => !source || typeof source.title !== 'string' || typeof source.text !== 'string' || !source.text.trim())) throw new Error('This file is not a valid Briefcase library JSON.');
+          const seen = new Set(sources.map((source) => source.id));
+          const additions = incoming.map((source) => {
+            let id = typeof source.id === 'string' && source.id ? source.id : crypto.randomUUID();
+            if (seen.has(id)) id = crypto.randomUUID();
+            seen.add(id);
+            return { ...source, id, citation: String(source.citation || ''), jurisdiction: String(source.jurisdiction || 'Nigeria'), year: String(source.year || ''), sourceUrl: safeExternalUrl(source.sourceUrl), officialUrl: safeExternalUrl(source.officialUrl), hierarchy: ['Supreme Court', 'Court of Appeal', 'High Court'].includes(source.hierarchy) ? source.hierarchy : 'High Court', status: ['Not checked', 'Good Law', 'Distinguished', 'Overruled — Verify'].includes(source.status) ? source.status : 'Not checked', paragraphs: buildParagraphs(source.text) };
+          });
+          const previous = sources;
+          sources = [...additions, ...sources];
+          if (!persistSources()) { sources = previous; return; }
+          showToast(`${additions.length} source${additions.length === 1 ? '' : 's'} imported.`);
+        } catch (error) { showToast(error.message || 'Could not import that JSON library.'); }
+        $('#importLibraryFile').value = '';
+      }
+      function renderSources() {
+        $('#navCount').textContent = String(sources.length);
+        $('#sourceCount').textContent = `${sources.length} ${sources.length === 1 ? 'source' : 'sources'}`;
+        const container = $('#sourceList');
+        if (!sources.length) {
+          container.innerHTML = `<div class="empty-state"><div class="empty-inner"><div class="empty-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h11.5A2.5 2.5 0 0 1 19 7v13H7a2 2 0 0 1-2-2z"/><path d="M5 17.5A2.5 2.5 0 0 1 7.5 15H19M9 8h6"/></svg></div><h3>Your library is empty</h3><p>Add text from an official judgment, law report, or legislation. Nothing is preloaded or presented as a verified authority.</p><button class="outline-button" type="button" data-action="add"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add a source</button></div>`;
+          return;
+        }
+        container.innerHTML = sources.map((source) => `<article class="source-row"><div class="source-type">${escapeHtml((source.kind || 'TXT').slice(0, 3).toUpperCase())}</div><div class="source-info"><div class="source-title">${escapeHtml(source.title)}</div><div class="source-cite">${escapeHtml(source.citation || 'Citation not supplied')}</div><div class="source-meta">${escapeHtml(source.jurisdiction || 'Nigeria')}${source.year ? ` · ${escapeHtml(source.year)}` : ''} · ${Number(source.text.trim().split(/\s+/).length).toLocaleString()} words${source.pageCount ? ` · PDF · ${source.pageCount} pages` : ''}</div><div class="source-tags"><label><span class="hidden">Court hierarchy</span><select data-source-field="hierarchy" data-source-id="${escapeHtml(source.id)}" aria-label="Court hierarchy for ${escapeHtml(source.title)}"><option ${source.hierarchy === 'Supreme Court' ? 'selected' : ''}>Supreme Court</option><option ${source.hierarchy === 'Court of Appeal' ? 'selected' : ''}>Court of Appeal</option><option ${source.hierarchy === 'High Court' ? 'selected' : ''}>High Court</option></select></label><label><span class="hidden">Authority status</span><select data-source-field="status" data-source-id="${escapeHtml(source.id)}" aria-label="Authority status for ${escapeHtml(source.title)}"><option ${(!source.status || source.status === 'Not checked') ? 'selected' : ''}>Not checked</option><option ${source.status === 'Good Law' ? 'selected' : ''}>Good Law</option><option ${source.status === 'Distinguished' ? 'selected' : ''}>Distinguished</option><option ${source.status === 'Overruled — Verify' ? 'selected' : ''}>Overruled — Verify</option></select></label>${safeExternalUrl(source.officialUrl) ? `<a class="source-link" href="${escapeHtml(safeExternalUrl(source.officialUrl))}" target="_blank" rel="noopener noreferrer">NigerianLII record</a>` : ''}</div></div><button class="remove-source" type="button" data-remove="${escapeHtml(source.id)}" aria-label="Remove ${escapeHtml(source.title)}" title="Remove source"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M5.5 7l1 13h11l1-13M9 7V4h6v3"/></svg></button></article>`).join('');
+      }
+      function showToast(message) {
+        const toast = $('#toast'); toast.textContent = message; toast.classList.remove('hidden');
+        clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.add('hidden'), 2800);
+      }
+      function modal(title, description, body) {
+        $('#modalRoot').innerHTML = `<div class="modal-backdrop" data-dismiss="true"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><header class="modal-head"><div><h2 id="modalTitle">${title}</h2><p>${description}</p></div><button type="button" class="icon-button" data-close aria-label="Close dialog">×</button></header><div class="modal-body">${body}</div></section></div>`;
+        $('#modalRoot [data-close]').focus();
+      }
+      function closeModal() { $('#modalRoot').innerHTML = ''; }
+      const libraryLoads = new Map();
+      function loadBrowserLibrary(url, globalName) {
+        if (window[globalName]) return Promise.resolve(window[globalName]);
+        if (libraryLoads.has(url)) return libraryLoads.get(url);
+        const loading = new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = url;
+          script.crossOrigin = 'anonymous';
+          script.onload = () => window[globalName] ? resolve(window[globalName]) : reject(new Error('The document parser did not initialize.'));
+          script.onerror = () => reject(new Error('Could not load the document parser. Check your internet connection and try again.'));
+          document.head.append(script);
+        });
+        libraryLoads.set(url, loading);
+        loading.catch(() => libraryLoads.delete(url));
+        return loading;
+      }
+      function autoTagDocument(text, fileName) {
+        const header = text.slice(0, 12000);
+        const lines = header.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+        const caseTitle = lines.find((line) => line.length <= 220 && /\b(?:v\.?|vs\.?|versus)\s+/i.test(line));
+        const citationMatch = header.match(/\bLPELR\s*-\s*\d+(?:\s*\([A-Z]+\))?|(?:\[\s*(?:19|20)\d{2}\s*\]|\(\s*(?:19|20)\d{2}\s*\))\s*\d+\s*(?:NWLR|SCNJ|FWLR)\b[^\r\n;]*/i);
+        const courtMatch = header.match(/\b(Supreme Court(?: of Nigeria)?|Court of Appeal(?: of Nigeria)?)\b/i);
+        const citationYear = citationMatch && citationMatch[0].match(/(?:19|20)\d{2}/);
+        const yearMatch = citationYear || header.match(/\b(?:19|20)\d{2}\b/);
+        return {
+          title: caseTitle || fileName.replace(/\.(pdf|docx)$/i, ''),
+          citation: citationMatch ? citationMatch[0].trim() : '',
+          court: courtMatch ? courtMatch[0] : '',
+          year: yearMatch ? yearMatch[0] : '',
+          detected: [caseTitle && 'case title', citationMatch && 'citation', courtMatch && 'court', yearMatch && 'year'].filter(Boolean)
+        };
+      }
+      async function extractPdf(file) {
+        const pdfjs = await loadBrowserLibrary('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js', 'pdfjsLib');
+        pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+        const pages = [];
+        for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+          const page = await pdf.getPage(pageNumber);
+          const content = await page.getTextContent();
+          const text = content.items.map((item) => `${item.str}${item.hasEOL ? '\n' : ' '}`).join('').trim();
+          pages.push(`[Page ${pageNumber}]\n${text}`);
+        }
+        const text = pages.join('\n\n');
+        if (!text.replace(/\[Page \d+\]/g, '').trim()) throw new Error('No selectable text was found. Scanned PDFs need OCR, which is not included.');
+        return { text, kind: 'Judgment PDF', pageCount: pdf.numPages };
+      }
+      async function extractDocx(file) {
+        const mammoth = await loadBrowserLibrary('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js', 'mammoth');
+        const result = await mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+        if (!result.value.trim()) throw new Error('No text was found in this DOCX file.');
+        return { text: result.value.trim(), kind: 'DOCX' };
+      }
+      async function importDocument(file) {
+        if (!file) return;
+        const extension = file.name.split('.').pop().toLowerCase();
+        if (!['pdf', 'docx'].includes(extension)) { showToast('Choose a PDF or DOCX file.'); return; }
+        if (file.size > 40 * 1024 * 1024) { showToast('Files must be 40 MB or smaller.'); return; }
+        const status = $('#fileStatus');
+        status.textContent = `Reading ${file.name} locally…`;
+        try {
+          const parsed = extension === 'pdf' ? await extractPdf(file) : await extractDocx(file);
+          $('#sourceText').value = parsed.text;
+          $('#sourceKind').value = parsed.kind;
+          const tags = autoTagDocument(parsed.text, file.name);
+          $('#sourceTitle').value = tags.title;
+          $('#sourceCitation').value = tags.citation;
+          $('#sourceJurisdiction').value = tags.court;
+          $('#sourceYear').value = tags.year;
+          $('#sourceHierarchy').value = /supreme court/i.test(tags.court) ? 'Supreme Court' : /court of appeal/i.test(tags.court) ? 'Court of Appeal' : 'High Court';
+          $('#sourcePageCount').value = parsed.pageCount || '';
+          $('#sourceFileName').value = file.name;
+          const tagged = tags.detected.length ? `Auto-detected: ${tags.detected.join(', ')}. Review before saving.` : 'No case metadata detected. Enter and verify it before saving.';
+          $('#tagSummary').textContent = `${tagged}${parsed.pageCount ? ` PDF page numbers (1–${parsed.pageCount}) are preserved in the extracted text and citations.` : ' DOCX page numbers are not stable in extracted text.'}`;
+          $('#tagSummary').classList.remove('hidden');
+          status.textContent = `${file.name} · ${parsed.pageCount ? `${parsed.pageCount} pages extracted` : 'Text extracted'} · parsed in this browser`;
+        } catch (error) {
+          status.textContent = error.message || 'Could not read this document.';
+        }
+      }
+      function openSourceModal() {
+        modal('Add a source', 'Import a judgment or report locally, then review the detected metadata before saving.', `<form id="sourceForm"><div class="form-grid"><div class="field full"><label>Document file (PDF or DOCX)</label><button class="dropzone" id="fileDrop" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 15v4h16v-4"/></svg><strong>Drop a file here or choose from device</strong><span>PDF judgments preserve extracted page numbers; DOCX pagination is not stable.</span><span id="fileStatus">PDF.js and Mammoth load from CDN on first use; file contents stay in this browser.</span></button><input id="sourceFile" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden><div id="tagSummary" class="tag-summary hidden"></div></div><div class="field full"><label for="sourceTitle">Case title *</label><input id="sourceTitle" required maxlength="180" placeholder="As printed in the judgment or report"></div><div class="field full"><label for="sourceCitation">Citation as published</label><input id="sourceCitation" maxlength="240" placeholder="e.g. [2020] 1 NWLR (Pt. 1704) 1"></div><div class="field"><label for="sourceKind">Source type</label><select id="sourceKind"><option>Judgment PDF</option><option>DOCX</option><option>Judgment</option><option>Law report</option><option>Legislation</option><option>Other</option></select></div><div class="field"><label for="sourceJurisdiction">Court</label><input id="sourceJurisdiction" maxlength="100" placeholder="e.g. Supreme Court of Nigeria"></div><div class="field"><label for="sourceYear">Year</label><input id="sourceYear" inputmode="numeric" maxlength="4" placeholder="e.g. 2020"></div><input id="sourcePageCount" type="hidden"><input id="sourceFileName" type="hidden"><div class="field full"><label for="sourceText">Extracted or pasted source text *</label><textarea id="sourceText" required placeholder="Choose a PDF/DOCX above, or paste source text here."></textarea><span class="field-hint">Parsing is local. PDF page markers are retained for pinpoint citations. Avoid confidential material; verify auto-detected details and the source itself before use.</span></div></div><div class="modal-actions"><button class="text-button" type="button" data-close>Cancel</button><button class="submit" type="submit">Add to library</button></div></form>`);
+        const metadataFields = document.createElement('div');
+        metadataFields.className = 'field full';
+        metadataFields.innerHTML = `<div class="form-grid"><div class="field"><label for="sourceHierarchy">Court hierarchy</label><select id="sourceHierarchy"><option>Supreme Court</option><option>Court of Appeal</option><option selected>High Court</option></select></div><div class="field"><label for="sourceStatus">Authority status</label><select id="sourceStatus"><option selected>Not checked</option><option>Good Law</option><option>Distinguished</option><option>Overruled — Verify</option></select></div><div class="field full"><label for="sourceUrl">Official/source URL</label><input id="sourceUrl" type="url" placeholder="https://..."></div></div>`;
+        $('#sourceForm .form-grid').insertBefore(metadataFields, $('#sourceText').closest('.field'));
+        $('#fileDrop').addEventListener('click', () => $('#sourceFile').click());
+        $('#sourceFile').addEventListener('change', (event) => importDocument(event.target.files[0]));
+        const dropzone = $('#fileDrop');
+        for (const eventName of ['dragenter', 'dragover']) dropzone.addEventListener(eventName, (event) => { event.preventDefault(); dropzone.classList.add('drag-over'); });
+        for (const eventName of ['dragleave', 'drop']) dropzone.addEventListener(eventName, (event) => { event.preventDefault(); dropzone.classList.remove('drag-over'); });
+        dropzone.addEventListener('drop', (event) => importDocument(event.dataTransfer.files[0]));
+        $('#sourceForm').addEventListener('submit', (event) => {
+          event.preventDefault();
+          const text = $('#sourceText').value.trim();
+          if (!text) return;
+          const previous = sources;
+          sources.unshift({ id: crypto.randomUUID(), title: $('#sourceTitle').value.trim(), citation: $('#sourceCitation').value.trim(), kind: $('#sourceKind').value, jurisdiction: $('#sourceJurisdiction').value.trim(), year: $('#sourceYear').value.trim(), pageCount: Number($('#sourcePageCount').value) || null, fileName: $('#sourceFileName').value, sourceUrl: safeExternalUrl($('#sourceUrl').value), hierarchy: $('#sourceHierarchy').value, status: $('#sourceStatus').value, text, paragraphs: buildParagraphs(text), addedAt: new Date().toISOString() });
+          if (persistSources()) { closeModal(); showToast('Source added to this browser library.'); }
+          else sources = previous;
+        });
+      }
+      function openSettings() {
+        const providers = {
+          openai: { endpoint: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o-mini' },
+          groq: { endpoint: 'https://api.groq.com/openai/v1/chat/completions', model: 'llama-3.3-70b-versatile' },
+          openrouter: { endpoint: 'https://openrouter.ai/api/v1/chat/completions', model: 'openai/gpt-4o-mini' },
+          ollama: { endpoint: 'http://localhost:11434/v1/chat/completions', model: 'llama3.2' }
+        };
+        modal('LLM connection', 'Provider calls run directly from this browser. Use a temporary demo key only; it is kept in sessionStorage for this tab and sent to the provider.', `<form id="settingsForm"><div class="form-grid"><div class="field"><label for="providerPreset">Provider preset</label><select id="providerPreset"><option value="custom">Custom endpoint</option><option value="openai">OpenAI</option><option value="groq">Groq</option><option value="openrouter">OpenRouter</option><option value="ollama">Local Ollama</option></select></div><div class="field"><label for="model">Model</label><input id="model" value="${escapeHtml(settings.model || '')}" placeholder="Model identifier"></div><div class="field full"><label for="endpoint">Chat completions endpoint</label><input id="endpoint" type="url" placeholder="https://your-server.example/api/research" value="${escapeHtml(settings.endpoint || '')}"></div><div class="field full"><label for="apiKey">API key <span class="field-hint">Session only; never included in library exports.</span></label><input id="apiKey" type="password" autocomplete="off" placeholder="${sessionStorage.getItem('briefcase.ng.apiKey') ? 'Key saved in this tab; enter to replace' : 'Required by hosted providers; not saved on disk'}"><button type="button" class="text-button" id="clearApiKey">Clear key for this tab</button></div><div class="field-hint full">Hosted presets send source excerpts and the question to the selected provider. Ollama requires a running local server. Custom endpoints may use the Briefcase JSON response contract. Exact-quote checks do not establish that a quote supports a claim.</div></div><div class="modal-actions"><button type="button" class="text-button" data-close>Cancel</button><button type="submit" class="submit">Save connection</button></div></form>`);
+        $('#providerPreset').value = settings.provider || 'custom';
+        $('#providerPreset').addEventListener('change', () => {
+          const preset = providers[$('#providerPreset').value];
+          if (preset) { $('#endpoint').value = preset.endpoint; $('#model').value = preset.model; }
+        });
+        $('#clearApiKey').addEventListener('click', () => { sessionStorage.removeItem('briefcase.ng.apiKey'); $('#apiKey').value = ''; $('#apiKey').placeholder = 'Required by hosted providers; not saved on disk'; updateModeStatus(); });
+        $('#settingsForm').addEventListener('submit', (event) => {
+          event.preventDefault();
+          settings = { provider: $('#providerPreset').value, endpoint: $('#endpoint').value.trim(), model: $('#model').value.trim() };
+          const apiKey = $('#apiKey').value.trim();
+          if (apiKey) sessionStorage.setItem('briefcase.ng.apiKey', apiKey);
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+          updateModeStatus(); closeModal(); showToast(settings.endpoint ? 'Provider settings saved; key stays in this tab.' : 'LLM connection cleared.');
+        });
+      }
+      function updateModeStatus() {
+        const keyRequired = ['openai', 'groq', 'openrouter'].includes(settings.provider);
+        const connected = Boolean(settings.endpoint) && (!keyRequired || Boolean(sessionStorage.getItem('briefcase.ng.apiKey')));
+        $('#statusText').textContent = answerMode === 'llm' && connected ? 'LLM · citation gate active' : 'Local evidence mode';
+        $('#statusDot').style.background = answerMode === 'llm' && connected ? '#69984a' : '#8d9995';
+      }
+      function setMode(mode) {
+        answerMode = mode;
+        $('#localMode').setAttribute('aria-pressed', String(mode === 'local'));
+        $('#llmMode').setAttribute('aria-pressed', String(mode === 'llm'));
+        updateModeStatus();
+        if (mode === 'llm' && !settings.endpoint) showToast('Add a trusted LLM endpoint in connection settings first.');
+      }
+      function normalizeQuote(value) {
+        return String(value || '').normalize('NFKC').replace(/\u00ad/g, '').replace(/([a-z])-(?:\s*\r?\n\s*)([a-z])/gi, '$1$2')
+          .replace(/[‘’ʼ]/g, "'").replace(/[“”]/g, '"').replace(/[‐‑‒–—]/g, '-')
+          .replace(/[^\p{L}\p{N}\s'"-]/gu, ' ').replace(/\s+/g, ' ').trim().toLocaleLowerCase();
+      }
+      function buildParagraphs(text) {
+        const pageSections = getPageSections({ text });
+        const paragraphs = [];
+        for (const section of pageSections) {
+          const extractedText = section.text.replace(/\r/g, '').replace(/([a-z])-(?:\n\s*)([a-z])/gi, '$1$2');
+          const normalizedLines = extractedText.split('\n').map((line) => line.trim()).filter(Boolean);
+          let blocks = extractedText.split(/\n\s*\n/).map((block) => block.trim()).filter(Boolean);
+          if (blocks.length <= 1 && normalizedLines.length > 1) {
+            blocks = [];
+            let current = [];
+            for (const line of normalizedLines) {
+              const startsParagraph = /^(?:\(?\d{1,3}[.)]|\[[0-9]+\]|[A-Z][A-Z\s,:-]{8,})\s/.test(line);
+              if (current.length && (startsParagraph || current.join(' ').length >= 650)) {
+                blocks.push(current.join(' ')); current = [];
+              }
+              current.push(line);
+              if (/[.!?]["')\]]?$/.test(line) && current.join(' ').length >= 180) {
+                blocks.push(current.join(' ')); current = [];
+              }
+            }
+            if (current.length) blocks.push(current.join(' '));
+          }
+          if (!blocks.length && extractedText.trim()) blocks = [extractedText.trim()];
+          for (const block of blocks) {
+            const sentences = block.split(/(?<=[.!?])\s+(?=[A-Z("“])/u).map((part) => part.trim()).filter(Boolean);
+            let current = '';
+            for (const sentence of sentences) {
+              current = current ? `${current} ${sentence}` : sentence;
+              if (current.length >= 700) { paragraphs.push({ page: section.page, text: current }); current = ''; }
+            }
+            if (current) paragraphs.push({ page: section.page, text: current });
+          }
+        }
+        return paragraphs.map((paragraph, index) => ({ number: index + 1, page: paragraph.page, text: paragraph.text }));
+      }
+      function getSourceParagraphs(source) {
+        if (Array.isArray(source.paragraphs) && source.paragraphs.length) return source.paragraphs;
+        source.paragraphs = buildParagraphs(source.text);
+        return source.paragraphs;
+      }
+      function editDistance(left, right) {
+        if (Math.abs(left.length - right.length) > 2) return 3;
+        let previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+        for (let row = 1; row <= left.length; row += 1) {
+          const current = [row];
+          for (let column = 1; column <= right.length; column += 1) current[column] = Math.min(current[column - 1] + 1, previous[column] + 1, previous[column - 1] + (left[row - 1] === right[column - 1] ? 0 : 1));
+          previous = current;
+        }
+        return previous[right.length];
+      }
+      function stemToken(value) {
+        let term = value.toLocaleLowerCase();
+        for (let pass = 0; pass < 2; pass += 1) {
+          if (term.length > 5 && term.endsWith('ies')) return `${term.slice(0, -3)}y`;
+          if (term.length > 6 && term.endsWith('ing')) {
+            term = term.slice(0, -3);
+            if (/(.)\1$/.test(term)) term = term.slice(0, -1);
+            continue;
+          }
+          if (term.length > 5 && term.endsWith('ed')) { term = term.slice(0, -2); continue; }
+          if (term.length > 4 && term.endsWith('s') && !term.endsWith('ss')) { term = term.slice(0, -1); continue; }
+          break;
+        }
+        return term;
+      }
+      let miniSearchLoad;
+      async function rankParagraphs(question) {
+        const documents = sources.flatMap((source) => getSourceParagraphs(source).map((paragraph) => ({
+          id: `${source.id}::${paragraph.number}`, source, paragraph,
+          title: source.title, citation: source.citation || '', text: paragraph.text
+        })));
+        if (!documents.length) return [];
+        try {
+          if (!miniSearchLoad) miniSearchLoad = loadBrowserLibrary('https://cdn.jsdelivr.net/npm/minisearch@7.1.2/dist/umd/index.min.js', 'MiniSearch');
+          const MiniSearch = await miniSearchLoad;
+          const index = new MiniSearch({ fields: ['title', 'citation', 'text'], storeFields: ['sourceId', 'paragraphNumber'], processTerm: stemToken, searchOptions: { boost: { title: 4, citation: 2 }, prefix: true, fuzzy: 0.2 } });
+          index.addAll(documents.map(({ id, source, paragraph, title, citation, text }) => ({ id, sourceId: source.id, paragraphNumber: paragraph.number, title, citation, text })));
+          const byId = new Map(documents.map((document) => [document.id, document]));
+          const results = index.search(question, { prefix: true, fuzzy: 0.2, boost: { title: 4, citation: 2 } });
+          $('#searchEngineStatus').textContent = 'MiniSearch BM25 + fuzzy ranking active in this browser.';
+          return results.slice(0, 18).map((result) => byId.get(result.id)).filter(Boolean);
+        } catch {
+          miniSearchLoad = null;
+          $('#searchEngineStatus').textContent = 'Offline local fuzzy ranking active; MiniSearch CDN unavailable.';
+          const terms = [...new Set(normalizeQuote(question).split(' ').filter((term) => term.length > 2))];
+          if (!terms.length) return [];
+          return documents.map((document) => {
+            const words = normalizeQuote(`${document.title} ${document.citation} ${document.text}`).split(' ');
+            let score = 0;
+            for (const term of terms) {
+              if (words.includes(term)) score += 1;
+              else if (term.length > 4 && words.some((word) => editDistance(term, word) <= (term.length > 8 ? 2 : 1))) score += 0.65;
+            }
+            return { ...document, score: score / terms.length };
+          }).filter((result) => result.score >= 0.2).sort((left, right) => right.score - left.score).slice(0, 18);
+        }
+      }
+      function getPageSections(source) {
+        const markers = [...source.text.matchAll(/^\[Page (\d+)\]\s*$/gm)];
+        if (!markers.length) return [{ page: null, text: source.text }];
+        return markers.map((marker, index) => ({
+          page: Number(marker[1]),
+          text: source.text.slice(marker.index + marker[0].length, markers[index + 1]?.index ?? source.text.length)
+        }));
+      }
+      function citationLabel(source, paragraph) {
+        const parts = [source.citation || source.title];
+        if (source.jurisdiction) parts.push(source.jurisdiction);
+        if (source.year && !(source.citation || '').includes(source.year)) parts.push(source.year);
+        if (paragraph?.number) parts.push(`¶${paragraph.number}`);
+        if (paragraph?.page) parts.push(`PDF p. ${paragraph.page}`);
+        return parts.join(' · ');
+      }
+      function citationBadges(source) {
+        const status = source.status || 'Not checked';
+        return `<span class="authority-badge">${escapeHtml(source.hierarchy || 'High Court')}</span><span class="authority-badge ${statusClass(status)}">${escapeHtml(status)}</span>`;
+      }
+      function citationButton(source, paragraph) {
+        return `<button type="button" class="citation-link" data-view-source-id="${escapeHtml(source.id)}" data-view-paragraph-number="${paragraph.number}" aria-label="Open ${escapeHtml(source.title)}, paragraph ${paragraph.number}"><span>${escapeHtml(citationLabel(source, paragraph))}</span>${citationBadges(source)}</button>`;
+      }
+      function highlightMarkup(text, question) {
+        const terms = [...new Set(normalizeQuote(question).split(' ').filter((term) => term.length > 2))].sort((a, b) => b.length - a.length);
+        if (!terms.length) return escapeHtml(text);
+        const pattern = new RegExp(`(${terms.map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'giu');
+        return String(text).split(pattern).map((part, index) => index % 2 ? `<mark class="query-highlight">${escapeHtml(part)}</mark>` : escapeHtml(part)).join('');
+      }
+      function openSourceViewer(sourceId, paragraphNumber) {
+        const source = sources.find((item) => item.id === sourceId);
+        if (!source) return;
+        const paragraphs = getSourceParagraphs(source);
+        const sourceUrl = safeExternalUrl(source.sourceUrl);
+        const officialUrl = safeExternalUrl(source.officialUrl);
+        $('#modalRoot').innerHTML = `<div class="modal-backdrop" data-dismiss="true"><section class="modal viewer-modal" role="dialog" aria-modal="true" aria-labelledby="viewerTitle"><header class="modal-head"><div><h2 id="viewerTitle">${escapeHtml(source.title)}</h2><p>${escapeHtml(citationLabel(source, null))}</p></div><button type="button" class="icon-button" data-close aria-label="Close source viewer">×</button></header><div class="modal-body"><div class="viewer-meta">${citationBadges(source)}${sourceUrl ? ` <a class="source-link" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener noreferrer">Excerpt/source page</a>` : ''}${officialUrl ? ` <a class="source-link" href="${escapeHtml(officialUrl)}" target="_blank" rel="noopener noreferrer">NigerianLII record</a>` : ''}</div><div class="source-viewer" id="sourceViewerText">${paragraphs.map((paragraph) => `<div class="source-paragraph" id="source-paragraph-${escapeHtml(source.id)}-${paragraph.number}" data-source-paragraph="${paragraph.number}" tabindex="-1"><span class="paragraph-number">¶${paragraph.number}${paragraph.page ? ` · PDF p. ${paragraph.page}` : ''}</span>${escapeHtml(paragraph.text)}</div>`).join('')}</div></div></section></div>`;
+        $('#modalRoot [data-close]').focus();
+        requestAnimationFrame(() => {
+          const target = document.getElementById(`source-paragraph-${source.id}-${paragraphNumber}`);
+          if (target) { target.classList.add('highlighted'); target.scrollIntoView({ block: 'center' }); target.focus({ preventScroll: true }); }
+        });
+      }
+      function renderLocalResults(question, matches, notice = '') {
+        const area = $('#answerArea'); area.classList.remove('hidden'); $('#searchNotice').classList.add('hidden');
+        if (!matches.length) {
+          area.innerHTML = `<div class="alert">${notice ? `<strong>${escapeHtml(notice)}</strong> ` : ''}<strong>No answer generated.</strong> No sufficiently relevant source text was found in your library. Add verified material or refine the question. This is not a finding that no authority exists.</div>`;
+          return;
+        }
+        area.innerHTML = `<article class="answer-card">${notice ? `<div class="answer-caveat">${escapeHtml(notice)}</div>` : ''}<div class="answer-top"><strong>Extractive research · ${matches.length} ranked paragraph${matches.length === 1 ? '' : 's'}</strong><span class="verified-label"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>Verbatim source text</span></div><div class="answer-body">${matches.slice(0, 8).map(({ source, paragraph }) => `<div class="evidence-item">${highlightMarkup(paragraph.text, question)}<div class="evidence-cite">${citationButton(source, paragraph)}</div></div>`).join('')}</div><div class="answer-caveat">Extractive passages are not a legal opinion. Confirm the full judgment, exact report pinpoint, subsequent history, and current validity before relying on them.</div></article>`;
+      }
+      function validateAndRender(payload, retrievedIds) {
+        if (!payload || !Array.isArray(payload.claims)) throw new Error('The model response did not contain a claims array.');
+        const paragraphByKey = new Map(retrievedIds.map((item) => [`${item.source.id}::${item.paragraph.number}`, item]));
+        const verified = [];
+        const blocked = [];
+        for (const claim of payload.claims) {
+          let reason = '';
+          const citations = [];
+          if (!claim || typeof claim.text !== 'string' || !claim.text.trim()) reason = 'missing claim text';
+          else if (!Array.isArray(claim.citations) || !claim.citations.length) reason = 'missing citation';
+          else {
+            for (const citation of claim.citations) {
+              const retrieved = paragraphByKey.get(`${citation.sourceId}::${Number(citation.paragraphNumber)}`);
+              const quote = normalizeQuote(citation.quote);
+              if (!retrieved) { reason = 'citation not retrieved'; break; }
+              if (!quote || !normalizeQuote(retrieved.paragraph.text).includes(quote)) { reason = 'quote mismatch'; break; }
+              citations.push({ ...retrieved, quote: citation.quote });
+            }
+          }
+          if (reason) blocked.push({ claim: typeof claim?.text === 'string' ? claim.text : '(no claim text)', reason, citations: Array.isArray(claim?.citations) ? claim.citations : [] });
+          else verified.push({ text: claim.text.trim(), citations });
+        }
+        const area = $('#answerArea'); area.classList.remove('hidden'); $('#searchNotice').classList.add('hidden');
+        const verifiedRows = verified.map((claim) => `<div class="audit-entry verified"><div><strong>Verified claim</strong>${escapeHtml(claim.text)}</div><div class="audit-evidence"><strong>Matched source quote</strong>${claim.citations.map(({ source, paragraph, quote }) => `<blockquote>${escapeHtml(quote)}</blockquote><div class="evidence-cite">${citationButton(source, paragraph)}</div>`).join('')}</div></div>`).join('');
+        const blockedRows = blocked.map((item) => `<div class="audit-entry"><div><strong>Blocked · ${escapeHtml(item.reason)}</strong>${escapeHtml(item.claim)}</div><div class="audit-evidence"><strong>Returned quote</strong>${item.citations.map((citation) => `<blockquote>${escapeHtml(citation.quote || '(none)')}</blockquote>`).join('') || '(none)'}</div></div>`).join('');
+        area.innerHTML = `<article class="answer-card"><div class="answer-top"><strong>LLM synthesis · ${verified.length} claim${verified.length === 1 ? '' : 's'} verified</strong><span class="verified-label">${blocked.length} blocked</span></div><div class="answer-body">${verified.length ? verified.map((claim) => `<p>${escapeHtml(claim.text)}</p>${claim.citations.map(({ source, paragraph, quote }) => `<div class="evidence-item">“${escapeHtml(quote)}”<div class="evidence-cite">${citationButton(source, paragraph)}</div></div>`).join('')}`).join('') : '<div class="alert">No claim passed citation verification. No legal synthesis is shown.</div>'}<details class="audit-log" ${blocked.length ? 'open' : ''}><summary>Verification Audit Log · ${verified.length} verified | ${blocked.length} blocked${blocked.length ? ` (${escapeHtml(blocked[0].reason)})` : ''}</summary>${verifiedRows}${blockedRows || '<div class="audit-entry verified">All returned claims had citations and exact matching source passages.</div>'}</details></div><div class="answer-caveat">Quotes are whitespace-, punctuation-, and line-break-normalized before comparison with the cited paragraph. A match proves text presence only; it does not prove authenticity, current status, or logical support for the proposition. Review the full authority.</div></article>`;
+      }
+      function parseModelJson(value) {
+        if (value && typeof value === 'object' && Array.isArray(value.claims)) return value;
+        const text = String(value || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+        return JSON.parse(text);
+      }
+      async function requestSynthesis(question, matches) {
+        const provider = settings.provider || 'custom';
+        const apiKey = sessionStorage.getItem('briefcase.ng.apiKey') || '';
+        const retrieved = matches.slice(0, 12).map(({ source, paragraph }) => ({ source, paragraph }));
+        const sourcePayload = retrieved.map(({ source, paragraph }) => ({ sourceId: source.id, paragraphNumber: paragraph.number, page: paragraph.page, title: source.title, citation: source.citation, hierarchy: source.hierarchy, status: source.status, text: paragraph.text }));
+        const headers = { 'Content-Type': 'application/json' };
+        if (apiKey && provider !== 'ollama') headers.Authorization = `Bearer ${apiKey}`;
+        let body;
+        if (provider === 'custom') {
+          body = { question, sources: sourcePayload, responseFormat: { claims: [{ text: 'string', citations: [{ sourceId: 'string', paragraphNumber: 'number', quote: 'verbatim substring from that paragraph' }] }] } };
+        } else {
+          body = { model: settings.model, temperature: 0, response_format: { type: 'json_object' }, messages: [
+            { role: 'system', content: 'You are a legal research assistant. Use only the supplied Nigerian legal source paragraphs. Return JSON only, in the form {"claims":[{"text":"...","citations":[{"sourceId":"...","paragraphNumber":1,"quote":"exact quotation from that paragraph"}]}]}. Every factual or legal claim must cite one or more supplied paragraphs. Do not invent cases, citations, page numbers, quotes, or legal propositions. If the evidence is insufficient, return {"claims":[]}.' },
+            { role: 'user', content: JSON.stringify({ question, sources: sourcePayload }) }
+          ] };
+        }
+        const response = await fetch(settings.endpoint, { method: 'POST', headers, body: JSON.stringify(body) });
+        if (!response.ok) throw new Error(`Provider returned HTTP ${response.status}.`);
+        const data = await response.json();
+        if (provider === 'custom') return { payload: data, retrieved };
+        return { payload: parseModelJson(data.choices?.[0]?.message?.content), retrieved };
+      }
+      async function runSearch(question) {
+        $('#searchNotice').classList.add('hidden'); $('#answerArea').classList.remove('hidden');
+        $('#answerArea').innerHTML = `<div class="answer-card"><div class="answer-body">Searching your source library…</div></div>`;
+        const matches = await rankParagraphs(question);
+        if (answerMode === 'local') { renderLocalResults(question, matches); return; }
+        const needsKey = ['openai', 'groq', 'openrouter'].includes(settings.provider);
+        if (!settings.endpoint || (needsKey && !sessionStorage.getItem('briefcase.ng.apiKey'))) {
+          answerMode = 'local'; $('#localMode').setAttribute('aria-pressed', 'true'); $('#llmMode').setAttribute('aria-pressed', 'false'); updateModeStatus();
+          renderLocalResults(question, matches, 'No usable LLM connection or session key is configured. Switched to extractive research; sources remain in this browser.');
+          return;
+        }
+        if (!matches.length) { renderLocalResults(question, []); return; }
+        try {
+          const result = await requestSynthesis(question, matches);
+          validateAndRender(result.payload, result.retrieved);
+        } catch (error) {
+          answerMode = 'local'; $('#localMode').setAttribute('aria-pressed', 'true'); $('#llmMode').setAttribute('aria-pressed', 'false'); updateModeStatus();
+          renderLocalResults(question, matches, `LLM unavailable or response invalid (${error.message || 'unknown error'}). Extractive fallback shown.`);
+        }
+      }
+
+      $('#localMode').addEventListener('click', () => setMode('local'));
+      $('#llmMode').addEventListener('click', () => setMode('llm'));
+      $('#queryForm').addEventListener('submit', (event) => { event.preventDefault(); runSearch($('#question').value.trim()); });
+      $('#answerArea').addEventListener('click', (event) => {
+        const citation = event.target.closest('[data-view-source-id]');
+        if (citation) openSourceViewer(citation.dataset.viewSourceId, Number(citation.dataset.viewParagraphNumber));
+      });
+      $('#sourceList').addEventListener('click', (event) => {
+        const addButton = event.target.closest('[data-action="add"]');
+        const removeButton = event.target.closest('[data-remove]');
+        if (addButton) openSourceModal();
+        if (removeButton) {
+          const source = sources.find((item) => item.id === removeButton.dataset.remove);
+          if (!source || !confirm(`Remove “${source.title}” from this browser library?`)) return;
+          sources = sources.filter((item) => item.id !== source.id); persistSources(); showToast('Source removed.');
+        }
+      });
+      $('#sourceList').addEventListener('change', (event) => {
+        const field = event.target.dataset.sourceField;
+        const source = sources.find((item) => item.id === event.target.dataset.sourceId);
+        if (!source || !['hierarchy', 'status'].includes(field)) return;
+        source[field] = event.target.value;
+        persistSources();
+      });
+      $('#loadDemoButton').addEventListener('click', loadDemoPack);
+      $('#exportLibraryButton').addEventListener('click', exportLibrary);
+      $('#importLibraryButton').addEventListener('click', () => $('#importLibraryFile').click());
+      $('#importLibraryFile').addEventListener('change', (event) => importLibrary(event.target.files[0]));
+      $('#sourcesNav').addEventListener('click', () => $('#librarySection').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      $('#settingsNav').addEventListener('click', openSettings);
+      $('#settingsButton').addEventListener('click', openSettings);
+      $('#modalRoot').addEventListener('click', (event) => { if (event.target.matches('[data-dismiss], [data-close]')) closeModal(); });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeModal(); });
+      renderSources(); updateModeStatus();
+    })();
+  </script>
+</body>
+</html>
